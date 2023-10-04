@@ -19,4 +19,3 @@
 	}
 </script>
 
-<p>Test WS</p>
