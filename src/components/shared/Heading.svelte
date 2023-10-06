@@ -28,7 +28,7 @@
 		},
 		display: {
 			element: "h1",
-			className: "text-6xl font-extrabold leading-[60px] md:text-7xl md:tracking-tight",
+			className: "text-4xl font-bold leading-[60px] md:text-5xl md:tracking-tight",
 		},
 	};
 

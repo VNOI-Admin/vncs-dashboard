@@ -20,7 +20,7 @@
 		});
 	});
 
-	$: title = $page.data.title ? `${$page.data.title} - VNCS` : "VNCS";
+	$: title = $page.data.title ? `${$page.data.title} - VNCS Dashboard` : "VNCS Dashboard";
 
 	$: isDark = $colorScheme === "dark";
 </script>
@@ -33,15 +33,13 @@
 	<meta name="theme-color" content={isDark ? "#000000" : "#FFFFFF"} />
 </svelte:head>
 
-<div class="p-2 w-full">
-	<div class="w-full flex items-center p-4 justify-between">
-		<a href="/" class="flex items-center gap-2 [&>*]:!text-[#dd2219] dark:[&>*]:!text-[#fbfb00]" aria-label="Go to home">
-			<Image width={32} height={32} alt="" class="rounded-md content-[url(/vncs-light.png)] dark:content-[url(/vncs-dark.png)]" />
-			<Heading type="title-large">VNCS</Heading>
-		</a>
-		<div>
-			<ToggleScheme />
-		</div>
-	</div>
+<nav class="w-full flex items-center p-4 gap-4 md:justify-between sticky h-fit max-h-screen">
+	<a href="/" class="flex items-center gap-2 [&>*]:!text-[#dd2219] dark:[&>*]:!text-[#fbfb00]" aria-label="Go to home">
+		<Image width={32} height={32} alt="" class="rounded-md content-[url(/vncs-light.png)] dark:content-[url(/vncs-dark.png)]" />
+		<Heading type="title-large">VNCS</Heading>
+	</a>
+	<ToggleScheme />
+</nav>
+<main id="main-content">
 	<slot />
-</div>
+</main>
