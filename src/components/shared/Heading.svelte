@@ -43,23 +43,25 @@
 		variant?: HeadingVariant;
 		type?: HeadingType;
 		screenReaderOnly?: boolean;
+		noColor?: boolean;
 	}
 
 	let variant: HeadingVariant = "default",
 		type: HeadingType = "title",
-		screenReaderOnly: boolean = false;
+		screenReaderOnly: boolean = false,
+		noColor: boolean = false;
 
 	$: mappedComponent = mapTypeToComponent[type];
 	$: mappedVariant = mapVariantToClass[variant];
 
-	export { screenReaderOnly, type, variant };
+	export { screenReaderOnly, type, variant, noColor };
 </script>
 
 <svelte:element
 	this={mappedComponent.element}
 	class={clsx(
 		"break-words",
-		mappedVariant,
+		!noColor && mappedVariant,
 		screenReaderOnly && "sr-only",
 		mappedComponent.className,
 	)}

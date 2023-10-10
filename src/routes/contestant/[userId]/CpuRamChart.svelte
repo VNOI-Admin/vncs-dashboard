@@ -3,27 +3,29 @@
 	import { onMount } from "svelte";
 
 	import { CPU_CHART_MAX_LENGTH } from "$lib/constants";
-	import type { CpuChartWorkerEvent } from "$lib/types";
+	import type { CpuRamChartType, CpuRamChartWorkerEvent } from "$lib/types";
 
-	let chartRef: HTMLCanvasElement;
+	let chartRef: HTMLCanvasElement, divRef: HTMLDivElement;
 
-	const CANVAS_WIDTH = 300,
-		CANVAS_HEIGHT = 200;
+	export let chartType: CpuRamChartType, chartWidth: number, chartHeight: number;
+
+	let canvasWorker: Worker;
 
 	onMount(() => {
-		const loadCpu = async () => {
+		const loadCpuRamChart = async () => {
 			const ctx = chartRef.transferControlToOffscreen();
 
-			const CanvasWorker = (await import("$lib/cpuChartWorker?worker")).default;
+			const CanvasWorker = (await import("$lib/cpuRamChartWorker?worker")).default;
 
-			const canvasWorker = new CanvasWorker();
+			canvasWorker = new CanvasWorker();
 
 			canvasWorker.postMessage(
 				{
 					type: "__INIT_WORKER__",
+					chartType,
 					canvas: ctx,
-					width: CANVAS_WIDTH,
-					height: CANVAS_HEIGHT,
+					width: chartWidth,
+					height: chartHeight,
 					config: {
 						type: "line",
 						data: {
@@ -69,25 +71,26 @@
 							animation: false,
 						},
 					},
-				} satisfies CpuChartWorkerEvent,
+				} satisfies CpuRamChartWorkerEvent,
 				[ctx],
 			);
 
 			setInterval(() => {
 				canvasWorker.postMessage({
 					type: "__UPDATE_CHART__",
+					chartType,
 					newData: faker.number.int({
 						min: 10,
 						max: 50,
 					}),
-				} satisfies CpuChartWorkerEvent);
+				} satisfies CpuRamChartWorkerEvent);
 			}, 2000);
 		};
 
-		loadCpu();
+		loadCpuRamChart();
 	});
 </script>
 
-<div class="flex items-center" style={`width:${CANVAS_WIDTH}px;height:${CANVAS_HEIGHT}px;`}>
-	<canvas bind:this={chartRef} />
+<div class="h-full w-full" bind:this={divRef}>
+	<canvas class="block" bind:this={chartRef} />
 </div>

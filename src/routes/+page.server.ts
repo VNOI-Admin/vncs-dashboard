@@ -1,15 +1,9 @@
 import { faker } from "@faker-js/faker";
 
-import freebsdPng from "$lib/static/freebsd.png";
-import linuxPng from "$lib/static/linux.png";
-import macPng from "$lib/static/macos.png";
-import windowsPng from "$lib/static/windows.png";
+import { mapOSToImage, SUPPORTED_OS } from "$lib/constants";
+import type { OS } from "$lib/types";
 
 import type { PageServerLoad } from "./$types";
-
-const SUPPORTED_OS = ["windows", "linux", "macos", "freebsd", "other"] as const;
-
-type OS = (typeof SUPPORTED_OS)[number];
 
 interface Data {
 	userId: string;
@@ -20,14 +14,6 @@ interface Data {
 }
 
 export const load: PageServerLoad = () => {
-	const mapOSToImage: Record<OS, string> = {
-		windows: windowsPng,
-		linux: linuxPng,
-		macos: macPng,
-		freebsd: freebsdPng,
-		other: windowsPng,
-	};
-
 	return {
 		devices: Array.from({
 			length: faker.number.int({
