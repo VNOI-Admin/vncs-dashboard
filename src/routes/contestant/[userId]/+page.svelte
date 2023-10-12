@@ -64,8 +64,8 @@
 			</Heading>
 		</div>
 	</div>
-	<div class="flex w-full flex-col gap-4 md:flex-row">
-		<div class="flex w-full flex-col gap-4">
+	<div class="flex w-full flex-col gap-4 md:flex-row md:flex-wrap">
+		<div class="flex w-full flex-col gap-4 md:flex-[1_1_0] md:overflow-x-auto">
 			<Heading type="title-large">
 				CPU usage <span class={getUsageColorClass(cpuUsage)}>{cpuUsage}%</span>
 			</Heading>
@@ -79,7 +79,7 @@
 				/>
 			</div>
 		</div>
-		<div class="flex w-full flex-col gap-4">
+		<div class="flex w-full flex-col gap-4 md:flex-[1_1_0] md:overflow-x-auto">
 			<Heading type="title-large">
 				RAM usage <span class={getUsageColorClass(ramUsage)}>{ramUsage}%</span>
 			</Heading>
