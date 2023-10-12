@@ -7,8 +7,7 @@ import type { OS } from "./types";
 
 export const COLOR_SCHEMES = ["dark", "light"] as const;
 
-export const CPU_CHART_MAX_LENGTH = 9;
-export const RAM_CHART_MAX_LENGTH = 9;
+export const CHART_MAX_LENGTH = 9;
 
 export const SUPPORTED_OS = ["windows", "linux", "macos", "freebsd", "other"] as const;
 

@@ -1,6 +1,10 @@
 <script lang="ts">
+	import { faker } from "@faker-js/faker";
+	import { onMount } from "svelte";
+
 	import Heading from "$components/shared/Heading.svelte";
 	import Image from "$components/shared/Image.svelte";
+	import { getUsageColorClass } from "$lib/getUsageColorClass";
 	import noAvatar from "$lib/static/no-avatar.webp";
 	import type { OS } from "$lib/types";
 
@@ -16,6 +20,24 @@
 		freebsd: "FreeBSD",
 		other: "Other",
 	};
+
+	let cpuUsage = 0,
+		ramUsage = 0;
+
+	onMount(() => {
+		const interval = setInterval(() => {
+			cpuUsage = faker.number.int({
+				min: 5,
+				max: 100,
+			});
+			ramUsage = faker.number.int({
+				min: 5,
+				max: 100,
+			});
+		}, 2000);
+
+		return () => clearInterval(interval);
+	});
 </script>
 
 <div class="flex w-full flex-col gap-4 p-2 md:p-10">
@@ -45,20 +67,28 @@
 	<div class="flex w-full flex-col gap-4 md:flex-row">
 		<div class="flex w-full flex-col gap-4">
 			<Heading type="title-large">
-				<!-- TODO: Show usage percentage here -->
-				CPU Usage
+				CPU Usage <span class={getUsageColorClass(cpuUsage)}>{cpuUsage}%</span>
 			</Heading>
 			<div class="w-full max-w-[500px] overflow-y-auto">
-				<CpuRamChart chartWidth={500} chartHeight={200} chartType="cpu" />
+				<CpuRamChart
+					chartWidth={500}
+					chartHeight={200}
+					chartType="cpu"
+					chartUsage={cpuUsage}
+				/>
 			</div>
 		</div>
 		<div class="flex w-full flex-col gap-4">
 			<Heading type="title-large">
-				<!-- TODO: Show usage percentage here -->
-				RAM Usage
+				RAM Usage <span class={getUsageColorClass(ramUsage)}>{ramUsage}%</span>
 			</Heading>
 			<div class="w-full max-w-[500px] overflow-y-auto">
-				<CpuRamChart chartWidth={500} chartHeight={200} chartType="ram" />
+				<CpuRamChart
+					chartWidth={500}
+					chartHeight={200}
+					chartType="ram"
+					chartUsage={ramUsage}
+				/>
 			</div>
 		</div>
 	</div>

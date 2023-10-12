@@ -11,7 +11,7 @@ export type ChartWorkerEvent<
 	TLabel = unknown,
 > = { chartType: TChart } & (
 	| {
-			type: "__INIT_WORKER__";
+			type: "__INIT_CHART__";
 			canvas: OffscreenCanvas;
 			width: number;
 			height: number;
@@ -22,9 +22,16 @@ export type ChartWorkerEvent<
 			newData: TData[number];
 	  }
 	| {
+			type: "__UPDATE_SCHEME__";
+			colorScheme: ColorScheme;
+	  }
+	| {
 			type: "__RESIZE_CHART__";
 			newWidth: number;
 			newHeight: number;
+	  }
+	| {
+			type: "__DESTROY_CHART__";
 	  }
 );
 

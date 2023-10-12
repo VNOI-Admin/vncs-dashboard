@@ -1,11 +1,9 @@
 <script lang="ts">
 	// import { browser } from "$app/environment";
 	import Heading from "$components/shared/Heading.svelte";
-	import Image from "$components/shared/Image.svelte";
-	import eaglePng from "$lib/static/eagle.png";
-	import { faker } from "@faker-js/faker/locale/af_ZA";
 
 	import type { PageData } from "./$types";
+	import DeviceInfo from "./DeviceInfo.svelte";
 
 	export let data: PageData;
 
@@ -56,59 +54,8 @@
 			</tr>
 		</thead>
 		<tbody>
-			{#each data.devices as { userId, userFirstName, userLastName, os, osImage }}
-				<tr>
-					<td>
-						<div class="flex flex-row flex-wrap items-center gap-2">
-							{#if os === "linux" || os === "freebsd"}
-								<Image
-									class="content-[url(/vncs-light.png)] dark:content-[url(/vncs-dark.png)]"
-									alt=""
-									width={32}
-									height={32}
-								/>
-							{:else}
-								<Image src={eaglePng} alt="" width={32} height={32} />
-							{/if}
-							<Image src={osImage} alt={os} width={32} height={32} />
-						</div>
-					</td>
-					<td>
-						<a class="link" href={`/contestant/${userId}`}>
-							<Heading type="title" noColor>
-								{userId}
-							</Heading>
-						</a>
-					</td>
-					<td>
-						<Heading type="title">
-							{userFirstName}
-						</Heading>
-					</td>
-					<td>
-						<Heading type="title">
-							{userLastName}
-						</Heading>
-					</td>
-					<td>
-						<!-- This text should change color when change delta meets a certain criteria -->
-						<Heading type="title">
-							{faker.number.int({
-								min: 5,
-								max: 100,
-							})}%
-						</Heading>
-					</td>
-					<td>
-						<!-- This text should change color when change delta meets a certain criteria -->
-						<Heading type="title">
-							{faker.number.int({
-								min: 5,
-								max: 100,
-							})}%
-						</Heading>
-					</td>
-				</tr>
+			{#each data.devices as device}
+				<DeviceInfo {device} />
 			{/each}
 		</tbody>
 	</table>

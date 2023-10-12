@@ -9,84 +9,118 @@ import {
 	PointElement,
 } from "chart.js";
 
-import { CPU_CHART_MAX_LENGTH, RAM_CHART_MAX_LENGTH } from "./constants";
-import type { CpuRamChartWorkerEvent } from "./types";
+import { CHART_MAX_LENGTH } from "./constants";
+import type { CpuRamChartType, CpuRamChartWorkerEvent } from "./types";
 
 Chart.register(LineController, LinearScale, CategoryScale, PointElement, LineElement, Filler);
 
 Chart.defaults.elements.point.pointStyle = "circle";
 Chart.defaults.elements.point.radius = 0;
 
-let cpuChart: Chart<"line", number[], string>;
-let ramChart: Chart<"line", number[], string>;
+const charts: Record<CpuRamChartType, Chart<"line", number[], string> | undefined> = {
+	cpu: undefined,
+	ram: undefined,
+};
 
 onmessage = (event: MessageEvent<CpuRamChartWorkerEvent>) => {
-	if (event.data.type === "__INIT_WORKER__") {
-		const { chartType, canvas, width, height, config } = event.data;
+	switch (event.data.type) {
+		case "__INIT_CHART__": {
+			const { chartType, canvas, width, height, config } = event.data;
 
-		switch (chartType) {
-			case "cpu": {
-				cpuChart = new Chart(canvas as unknown as HTMLCanvasElement, config);
+			charts[chartType] = new Chart(canvas as unknown as HTMLCanvasElement, config);
 
-				// Resizing the chart must be done manually, since OffscreenCanvas does not include event listeners.
-				canvas.width = width;
-				canvas.height = height;
+			// Resizing the chart must be done manually, since OffscreenCanvas does not include event listeners.
+			canvas.width = width;
+			canvas.height = height;
 
-				cpuChart.resize();
-				break;
-			}
-			case "ram": {
-				ramChart = new Chart(canvas as unknown as HTMLCanvasElement, config);
-
-				// Resizing the chart must be done manually, since OffscreenCanvas does not include event listeners.
-				canvas.width = width;
-				canvas.height = height;
-
-				ramChart.resize();
-				break;
-			}
+			charts[chartType]?.resize();
+			break;
 		}
-	} else if (event.data.type === "__UPDATE_CHART__") {
-		const { chartType, newData } = event.data;
-		switch (chartType) {
-			case "cpu": {
-				const newDataset = cpuChart.data.datasets[0].data;
-				newDataset.push(newData);
-				if (newDataset.length > CPU_CHART_MAX_LENGTH) {
-					cpuChart.data.datasets[0].data = newDataset.slice(
-						newDataset.length - CPU_CHART_MAX_LENGTH,
+		case "__UPDATE_CHART__": {
+			const { chartType, newData } = event.data;
+			const chart = charts[chartType];
+			if (chart !== undefined) {
+				const newDataset = [...chart.data.datasets[0].data, newData];
+				if (newDataset.length > CHART_MAX_LENGTH) {
+					chart.data.datasets[0].data = newDataset.slice(
+						newDataset.length - CHART_MAX_LENGTH,
 					);
 				} else {
-					cpuChart.data.datasets[0].data = newDataset;
+					chart.data.datasets[0].data = newDataset;
 				}
-				cpuChart.update();
-				break;
+				chart.update("none");
 			}
-			case "ram": {
-				const newDataset = ramChart.data.datasets[0].data;
-				newDataset.push(newData);
-				if (newDataset.length > RAM_CHART_MAX_LENGTH) {
-					ramChart.data.datasets[0].data = newDataset.slice(
-						newDataset.length - RAM_CHART_MAX_LENGTH,
-					);
-				} else {
-					ramChart.data.datasets[0].data = newDataset;
-				}
-				ramChart.update();
-				break;
-			}
+			break;
 		}
-	} else if (event.data.type === "__RESIZE_CHART__") {
-		const { chartType, newWidth, newHeight } = event.data;
-		switch (chartType) {
-			case "cpu": {
-				cpuChart.resize(newWidth, newHeight);
-				break;
+		case "__UPDATE_SCHEME__": {
+			const { colorScheme, chartType } = event.data;
+			const chart = charts[chartType];
+			if (chart !== undefined) {
+				switch (colorScheme) {
+					case "dark": {
+						(chart.options.backgroundColor as unknown as string[]) = [
+							"rgba(255, 99, 132, 0.2)",
+							"rgba(54, 162, 235, 0.2)",
+							"rgba(255, 206, 86, 0.2)",
+							"rgba(75, 192, 192, 0.2)",
+							"rgba(153, 102, 255, 0.2)",
+							"rgba(255, 159, 64, 0.2)",
+						];
+						(chart.options.borderColor as unknown as string[]) = [
+							"rgba(255, 99, 132, 1)",
+							"rgba(54, 162, 235, 1)",
+							"rgba(255, 206, 86, 1)",
+							"rgba(75, 192, 192, 1)",
+							"rgba(153, 102, 255, 1)",
+							"rgba(255, 159, 64, 1)",
+						];
+						for (const grid in chart.options.scales) {
+							const border = chart.options.scales[grid]?.grid;
+							if (border !== undefined) {
+								border.color = "rgba(255, 255, 255, 0.1)";
+							}
+						}
+						break;
+					}
+					case "light": {
+						(chart.options.backgroundColor as unknown as string[]) = [
+							"rgba(255, 99, 132, 0.2)",
+							"rgba(54, 162, 235, 0.2)",
+							"rgba(255, 206, 86, 0.2)",
+							"rgba(75, 192, 192, 0.2)",
+							"rgba(153, 102, 255, 0.2)",
+							"rgba(255, 159, 64, 0.2)",
+						];
+						(chart.options.borderColor as unknown as string[]) = [
+							"rgba(255, 99, 132, 1)",
+							"rgba(54, 162, 235, 1)",
+							"rgba(255, 206, 86, 1)",
+							"rgba(75, 192, 192, 1)",
+							"rgba(153, 102, 255, 1)",
+							"rgba(255, 159, 64, 1)",
+						];
+						for (const grid in chart.options.scales) {
+							const border = chart.options.scales[grid]?.grid;
+							if (border !== undefined) {
+								border.color = "rgba(0, 0, 0, 0.1)";
+							}
+						}
+						break;
+					}
+				}
+				chart.update();
 			}
-			case "ram": {
-				ramChart.resize(newWidth, newHeight);
-				break;
-			}
+			break;
+		}
+		case "__RESIZE_CHART__": {
+			const { chartType, newWidth, newHeight } = event.data;
+			charts[chartType]?.resize(newWidth, newHeight);
+			break;
+		}
+		case "__DESTROY_CHART__": {
+			const { chartType } = event.data;
+			charts[chartType]?.destroy();
+			break;
 		}
 	}
 };

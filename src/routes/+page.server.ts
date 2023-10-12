@@ -1,17 +1,9 @@
 import { faker } from "@faker-js/faker";
 
 import { mapOSToImage, SUPPORTED_OS } from "$lib/constants";
-import type { OS } from "$lib/types";
 
 import type { PageServerLoad } from "./$types";
-
-interface Data {
-	userId: string;
-	userFirstName: string;
-	userLastName: string;
-	os: OS;
-	osImage: string;
-}
+import type { Device } from "./types";
 
 export const load: PageServerLoad = () => {
 	return {
@@ -44,7 +36,7 @@ export const load: PageServerLoad = () => {
 				userLastName: faker.person.lastName(),
 				os,
 				osImage: mapOSToImage[os],
-			} satisfies Data;
+			} satisfies Device;
 		}),
 	};
 };
