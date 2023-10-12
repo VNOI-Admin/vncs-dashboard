@@ -12,7 +12,7 @@
 		chartLabel: string,
 		chartUsage: number;
 
-	const initChart: Action<HTMLCanvasElement, number> = (canvas) => {
+	const initChart: Action<HTMLCanvasElement, number> = (canvas, initialData) => {
 		const ctx = canvas.transferControlToOffscreen();
 
 		const canvasWorker = new CanvasWorker();
@@ -31,7 +31,7 @@
 						datasets: [
 							{
 								label: chartLabel,
-								data: Array(CHART_MAX_LENGTH).fill(0),
+								data: [initialData as number],
 								borderWidth: 1,
 								fill: "start",
 							},
