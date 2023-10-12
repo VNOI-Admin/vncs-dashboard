@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { faker } from "@faker-js/faker";
 
+	import { onMount } from "svelte";
+
 	import Heading from "$components/shared/Heading.svelte";
 	import Image from "$components/shared/Image.svelte";
 	import { getUsageColorClass } from "$lib/getUsageColorClass";
@@ -10,18 +12,27 @@
 
 	export let device: Device;
 
-	let cpuUsage = faker.number.int({
-			min: 5,
-			max: 100,
-		}),
-		ramUsage = faker.number.int({
-			min: 5,
-			max: 100,
-		});
+	let cpuUsage = 0,
+		ramUsage = 0;
 
-    $: cpuColor = getUsageColorClass(cpuUsage);
+	onMount(() => {
+		const interval = setInterval(() => {
+			cpuUsage = faker.number.int({
+				min: 5,
+				max: 100,
+			});
+			ramUsage = faker.number.int({
+				min: 5,
+				max: 100,
+			});
+		}, 2000);
 
-    $: ramColor = getUsageColorClass(ramUsage);
+		return () => clearInterval(interval);
+	});
+
+	$: cpuColor = getUsageColorClass(cpuUsage);
+
+	$: ramColor = getUsageColorClass(ramUsage);
 </script>
 
 <tr>
@@ -65,7 +76,7 @@
 	</td>
 	<td class={ramColor}>
 		<!-- This text should change color when change delta meets a certain criteria -->
-        <Heading type="title" noColor>
+		<Heading type="title" noColor>
 			{ramUsage}%
 		</Heading>
 	</td>
