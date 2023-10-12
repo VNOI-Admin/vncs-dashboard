@@ -5,12 +5,12 @@
 
 	import { page } from "$app/stores";
 	import ToggleScheme from "$components/layouts/ToggleScheme.svelte";
-	import Image from "$components/shared/Image.svelte";
 	import Heading from "$components/shared/Heading.svelte";
-	import { isColorScheme } from "$lib/isColorScheme";
-	import { colorScheme } from "$lib/stores/colorScheme";
+	import Image from "$components/shared/Image.svelte";
 	import Text from "$components/shared/Text.svelte";
 	import { clsx } from "$lib/clsx";
+	import { isColorScheme } from "$lib/isColorScheme";
+	import { colorScheme } from "$lib/stores/colorScheme";
 
 	onMount(() => {
 		const newTheme = document.documentElement.dataset.theme;

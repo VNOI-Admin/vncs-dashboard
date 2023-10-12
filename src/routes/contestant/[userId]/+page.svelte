@@ -67,26 +67,28 @@
 	<div class="flex w-full flex-col gap-4 md:flex-row">
 		<div class="flex w-full flex-col gap-4">
 			<Heading type="title-large">
-				CPU Usage <span class={getUsageColorClass(cpuUsage)}>{cpuUsage}%</span>
+				CPU usage <span class={getUsageColorClass(cpuUsage)}>{cpuUsage}%</span>
 			</Heading>
 			<div class="w-full max-w-[500px] overflow-y-auto">
 				<CpuRamChart
+					chartType="cpu"
 					chartWidth={500}
 					chartHeight={200}
-					chartType="cpu"
+					chartLabel="CPU%"
 					chartUsage={cpuUsage}
 				/>
 			</div>
 		</div>
 		<div class="flex w-full flex-col gap-4">
 			<Heading type="title-large">
-				RAM Usage <span class={getUsageColorClass(ramUsage)}>{ramUsage}%</span>
+				RAM usage <span class={getUsageColorClass(ramUsage)}>{ramUsage}%</span>
 			</Heading>
 			<div class="w-full max-w-[500px] overflow-y-auto">
 				<CpuRamChart
+					chartType="ram"
 					chartWidth={500}
 					chartHeight={200}
-					chartType="ram"
+					chartLabel="RAM%"
 					chartUsage={ramUsage}
 				/>
 			</div>

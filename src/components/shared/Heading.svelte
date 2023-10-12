@@ -54,7 +54,7 @@
 	$: mappedComponent = mapTypeToComponent[type];
 	$: mappedVariant = mapVariantToClass[variant];
 
-	export { screenReaderOnly, type, variant, noColor };
+	export { noColor,screenReaderOnly, type, variant };
 </script>
 
 <svelte:element

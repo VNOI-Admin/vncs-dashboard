@@ -16,7 +16,7 @@
 	}
 	body {
 		font-family: "League Spartan", sans-serif;
-		@apply transition-colors-opacity bg-zinc-50 duration-100 dark:bg-neutral-900;
+		@apply bg-zinc-50 transition-colors-opacity duration-100 dark:bg-neutral-900;
 	}
 
 	#root-container {

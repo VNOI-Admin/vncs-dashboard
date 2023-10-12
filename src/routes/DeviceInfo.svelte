@@ -5,7 +5,7 @@
 	import Image from "$components/shared/Image.svelte";
 	import { getUsageColorClass } from "$lib/getUsageColorClass";
 	import eaglePng from "$lib/static/eagle.png";
-    
+
 	import type { Device } from "./types";
 
 	export let device: Device;

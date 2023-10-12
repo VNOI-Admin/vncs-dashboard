@@ -1,14 +1,15 @@
 <script lang="ts">
 	import type { Action } from "svelte/action";
 
-	import CanvasWorker from "$lib/cpuRamChartWorker?worker";
 	import { CHART_MAX_LENGTH } from "$lib/constants";
-	import type { CpuRamChartType, CpuRamChartWorkerEvent } from "$lib/types";
+	import CanvasWorker from "$lib/cpuRamChartWorker?worker";
 	import { colorScheme } from "$lib/stores/colorScheme";
+	import type { CpuRamChartType, CpuRamChartWorkerEvent } from "$lib/types";
 
 	export let chartType: CpuRamChartType,
 		chartWidth: number,
 		chartHeight: number,
+		chartLabel: string,
 		chartUsage: number;
 
 	const initChart: Action<HTMLCanvasElement, number> = (canvas) => {
@@ -29,7 +30,7 @@
 						labels: Array(CHART_MAX_LENGTH).fill(" "),
 						datasets: [
 							{
-								label: "CPU%",
+								label: chartLabel,
 								data: Array(CHART_MAX_LENGTH).fill(0),
 								borderWidth: 1,
 								fill: "start",
