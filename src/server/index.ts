@@ -1,9 +1,9 @@
 import { createServer } from "node:http";
 import { isIPv6 } from "node:net";
 
-import { handler } from "./build/handler.js";
-import vncsPackageJson from "./package.json";
-import { createWSSInstance, onHttpServerUpgrade } from "./ws/index.js";
+import { handler } from "../../build/handler.js";
+import vncsPackageJson from "../../package.json";
+import { createWSSInstance, onHttpServerUpgrade } from "../../ws/index.js";
 
 const HOSTNAME = process.env.HOSTNAME;
 const PORT = parseInt(process.env.PORT || "8080");
