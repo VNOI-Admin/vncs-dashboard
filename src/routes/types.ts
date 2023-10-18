@@ -6,4 +6,8 @@ export interface Device {
 	userLastName: string;
 	os: OS;
 	osImage: string;
+	ip: string;
+	cpu: number;
+	ram: number;
+	ping: number;
 }

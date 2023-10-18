@@ -1,9 +1,11 @@
 <script lang="ts">
+	import { onMount } from "svelte";
 	// import { browser } from "$app/environment";
 	import Heading from "$components/shared/Heading.svelte";
 
 	import type { PageData } from "./$types";
 	import DeviceInfo from "./DeviceInfo.svelte";
+	import { invalidate } from "$app/navigation";
 
 	export let data: PageData;
 
@@ -23,6 +25,12 @@
 	// 		console.log("[ws] message received", event);
 	// 	});
 	// }
+
+	onMount(() => {
+		const interval = setInterval(() => invalidate("home:query"), 10000);
+
+		return () => clearInterval(interval);
+	});
 </script>
 
 <Heading type="title-large">Live contest update</Heading>

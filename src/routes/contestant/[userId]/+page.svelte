@@ -21,23 +21,8 @@
 		other: "Other",
 	};
 
-	let cpuUsage = 0,
-		ramUsage = 0;
-
-	onMount(() => {
-		const interval = setInterval(() => {
-			cpuUsage = faker.number.int({
-				min: 5,
-				max: 100,
-			});
-			ramUsage = faker.number.int({
-				min: 5,
-				max: 100,
-			});
-		}, 2000);
-
-		return () => clearInterval(interval);
-	});
+	$: cpuUsage = data.cpu;
+	$: ramUsage = data.ram;
 </script>
 
 <div class="flex w-full flex-col gap-4 p-2 md:p-10">
@@ -60,7 +45,7 @@
 				{data.userName}
 			</Heading>
 			<Heading type="title">
-				{data.userId}
+				{data.userId} • IP: {data.ip} • Online: {data.isOnline ? "Yes" : "No"} • Ping: {data.ping}ms
 			</Heading>
 		</div>
 	</div>

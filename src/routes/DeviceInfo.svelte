@@ -12,26 +12,9 @@
 
 	export let device: Device;
 
-	let cpuUsage = 0,
-		ramUsage = 0;
-
-	onMount(() => {
-		const interval = setInterval(() => {
-			cpuUsage = faker.number.int({
-				min: 5,
-				max: 100,
-			});
-			ramUsage = faker.number.int({
-				min: 5,
-				max: 100,
-			});
-		}, 2000);
-
-		return () => clearInterval(interval);
-	});
-
+	$: cpuUsage = device.cpu;
+	$: ramUsage = device.ram;
 	$: cpuColor = getUsageColorClass(cpuUsage);
-
 	$: ramColor = getUsageColorClass(ramUsage);
 </script>
 
