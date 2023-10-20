@@ -9,6 +9,11 @@ export default {
 			transitionProperty: {
 				"colors-opacity": `${defaultTheme.transitionProperty.colors}, opacity`,
 			},
+			colors: {
+				neutral: {
+					1000: "#111111",
+				},
+			},
 		},
 	},
 	plugins: [],

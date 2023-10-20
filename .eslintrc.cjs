@@ -27,6 +27,7 @@ module.exports = {
 			"warn",
 			{ ignoreRestSiblings: true, varsIgnorePattern: "^(_|\\$\\$)", argsIgnorePattern: "^_" },
 		],
+		"@typescript-eslint/no-explicit-any": "off",
 		"simple-import-sort/imports": "warn",
 		"simple-import-sort/exports": "warn",
 		"tailwindcss/no-custom-classname": "off",

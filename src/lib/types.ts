@@ -1,6 +1,6 @@
 import type { ChartConfiguration, ChartType, DefaultDataPoint } from "chart.js";
 
-import type { COLOR_SCHEMES, SUPPORTED_OS } from "./constants";
+import type { COLOR_SCHEMES } from "./constants";
 
 export type ColorScheme = (typeof COLOR_SCHEMES)[number];
 
@@ -38,5 +38,3 @@ export type ChartWorkerEvent<
 export type CpuRamChartType = "cpu" | "ram";
 
 export type CpuRamChartWorkerEvent = ChartWorkerEvent<CpuRamChartType, "line", number[], string>;
-
-export type OS = (typeof SUPPORTED_OS)[number];
