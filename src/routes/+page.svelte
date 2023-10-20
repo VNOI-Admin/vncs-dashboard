@@ -1,13 +1,23 @@
 <script lang="ts">
 	import { onMount } from "svelte";
+	import { fly } from "svelte/transition";
+
 	// import { browser } from "$app/environment";
+	import { invalidate } from "$app/navigation";
 	import Heading from "$components/shared/Heading.svelte";
+	import { range } from "$lib/range";
 
 	import type { PageData } from "./$types";
 	import DeviceInfo from "./DeviceInfo.svelte";
-	import { invalidate } from "$app/navigation";
+	import PaginationButton from "./PaginationButton.svelte";
+	import Text from "$components/shared/Text.svelte";
+	import Input from "$components/shared/Input.svelte";
+	import ChevronRight from "$components/icons/ChevronRight.svelte";
+	import { clsx } from "$lib/clsx";
 
 	export let data: PageData;
+
+	let isQuickNavigateOpen: boolean;
 
 	// let wsEstablished = false;
 
@@ -33,38 +43,80 @@
 	});
 </script>
 
-<Heading type="title-large">Live contest update</Heading>
-<div class="relative h-full w-full overflow-x-auto overflow-y-auto">
-	<!-- TODO: add `Attention needed` with colors, add search function? -->
-	<table class="absolute w-full table-auto border-separate border-spacing-4">
-		<thead>
-			<tr
-				class="[&>th]:sticky [&>th]:top-0 [&>th]:bg-zinc-50 [&>th]:transition-colors [&>th]:duration-100 dark:[&>th]:bg-neutral-900"
-			>
-				<th class="text-left md:w-[15%]">
-					<Heading type="title">OS</Heading>
-				</th>
-				<th class="text-left md:w-[15%]">
-					<Heading type="title">ID</Heading>
-				</th>
-				<th class="text-left md:w-[25%]">
-					<Heading type="title">First name</Heading>
-				</th>
-				<th class="text-left md:w-[25%]">
-					<Heading type="title">Last name</Heading>
-				</th>
-				<th class="text-left md:w-[10%]">
-					<Heading type="title">CPU usage</Heading>
-				</th>
-				<th class="text-left md:w-[10%]">
-					<Heading type="title">RAM usage</Heading>
-				</th>
-			</tr>
-		</thead>
-		<tbody>
-			{#each data.devices as device}
-				<DeviceInfo {device} />
+<Heading type="title-large">Monitor</Heading>
+<button
+	class="flex flex-row items-center gap-2 [&>*]:select-none"
+	on:click={() => (isQuickNavigateOpen = !isQuickNavigateOpen)}
+>
+	<ChevronRight
+		width={24}
+		height={24}
+		class={clsx(
+			"max-h-[24px] min-h-[24px] min-w-[24px] max-w-[24px] transition duration-100 dark:invert",
+			isQuickNavigateOpen && "rotate-90",
+		)}
+	/>
+	<Text>Quick navigate</Text>
+</button>
+{#if isQuickNavigateOpen}
+	<div
+		class="flex h-fit w-full flex-col gap-2"
+		transition:fly={{
+			duration: 150,
+		}}
+	>
+		<form method="GET" action="/">
+			<Input
+				label="To page"
+				id="home-quick-navigate-page"
+				type="text"
+				name="page"
+				variant="sm"
+				sameLine
+			/>
+		</form>
+		<div class="flex h-fit w-full flex-row flex-wrap gap-2">
+			{#each range(0, data.totalPages - 1) as page}
+				<PaginationButton as="a" href={`/?page=${page}`}>
+					{page}
+				</PaginationButton>
 			{/each}
-		</tbody>
-	</table>
+		</div>
+	</div>
+{/if}
+<div class="dark:bg-neutral-1000 h-full w-full rounded-md bg-white shadow-lg">
+	<div class="relative h-full w-full overflow-x-auto overflow-y-auto">
+		<!-- TODO: add `Attention needed` with colors, add search function? -->
+		<table class="absolute w-full table-auto border-separate border-spacing-4">
+			<thead>
+				<tr
+					class="dark:[&>th]:bg-neutral-1000 [&>th]:sticky [&>th]:top-0 [&>th]:bg-white [&>th]:transition-colors [&>th]:duration-100"
+				>
+					<th class="text-left md:w-[15%]">
+						<Heading type="title">ID</Heading>
+					</th>
+					<th class="text-left md:w-[25%]">
+						<Heading type="title">Name</Heading>
+					</th>
+					<th class="text-left md:w-[15%]">
+						<Heading type="title">IP</Heading>
+					</th>
+					<th class="text-left md:w-[15%]">
+						<Heading type="title">Online</Heading>
+					</th>
+					<th class="text-left md:w-[15%]">
+						<Heading type="title">CPU usage</Heading>
+					</th>
+					<th class="text-left md:w-[15%]">
+						<Heading type="title">RAM usage</Heading>
+					</th>
+				</tr>
+			</thead>
+			<tbody>
+				{#each data.devices as device}
+					<DeviceInfo {device} />
+				{/each}
+			</tbody>
+		</table>
+	</div>
 </div>

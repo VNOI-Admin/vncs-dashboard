@@ -1,32 +1,29 @@
 <script lang="ts">
-	import { faker } from "@faker-js/faker";
 	import { onMount } from "svelte";
 
 	import Heading from "$components/shared/Heading.svelte";
 	import Image from "$components/shared/Image.svelte";
 	import { getUsageColorClass } from "$lib/getUsageColorClass";
 	import noAvatar from "$lib/static/no-avatar.webp";
-	import type { OS } from "$lib/types";
 
 	import type { PageData } from "./$types";
 	import CpuRamChart from "./CpuRamChart.svelte";
+	import { invalidate } from "$app/navigation";
 
 	export let data: PageData;
 
-	const mapOSToName: Record<OS, string> = {
-		windows: "Windows",
-		macos: "macOS",
-		linux: "Linux",
-		freebsd: "FreeBSD",
-		other: "Other",
-	};
-
 	$: cpuUsage = data.cpu;
 	$: ramUsage = data.ram;
+
+	onMount(() => {
+		const interval = setInterval(() =>invalidate("contestant:data:info"), 10000);
+
+		return () => clearInterval(interval);
+	});
 </script>
 
 <div class="flex w-full flex-col gap-4 p-2 md:p-10">
-	<div class="flex w-full flex-row items-center gap-3">
+	<div class="flex w-full flex-row items-center gap-8 bg-white dark:bg-neutral-1000 rounded-xl px-4 py-2 shadow-lg">
 		<Image
 			src={noAvatar}
 			class="rounded-full"
@@ -35,22 +32,16 @@
 			height={150}
 		/>
 		<div>
-			<div class="flex flex-row items-center gap-2">
-				<Image src={data.osImage} alt="" width={32} height={32} />
-				<Heading type="title">
-					{mapOSToName[data.os]}
-				</Heading>
-			</div>
 			<Heading type="title-large">
-				{data.userName}
+				{data.userId}
 			</Heading>
 			<Heading type="title">
-				{data.userId} • IP: {data.ip} • Online: {data.isOnline ? "Yes" : "No"} • Ping: {data.ping}ms
+				IP: {data.ip} • Online: {data.isOnline ? "✅" : "❌"} • Ping: {data.ping}ms
 			</Heading>
 		</div>
 	</div>
 	<div class="flex w-full flex-col gap-4 md:flex-row md:flex-wrap">
-		<div class="flex w-full flex-col gap-4 md:flex-[1_1_0] md:overflow-x-auto">
+		<div class="flex w-full flex-col gap-4 md:flex-[1_1_0] md:overflow-x-auto bg-white dark:bg-neutral-1000 rounded-xl p-4 shadow-lg">
 			<Heading type="title-large">
 				CPU usage <span class={getUsageColorClass(cpuUsage)}>{cpuUsage}%</span>
 			</Heading>
@@ -64,7 +55,7 @@
 				/>
 			</div>
 		</div>
-		<div class="flex w-full flex-col gap-4 md:flex-[1_1_0] md:overflow-x-auto">
+		<div class="flex w-full flex-col gap-4 md:flex-[1_1_0] md:overflow-x-auto bg-white dark:bg-neutral-1000 rounded-xl p-4 shadow-lg">
 			<Heading type="title-large">
 				RAM usage <span class={getUsageColorClass(ramUsage)}>{ramUsage}%</span>
 			</Heading>

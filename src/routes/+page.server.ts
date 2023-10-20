@@ -1,7 +1,10 @@
-import { faker } from "@faker-js/faker";
-import { error } from "@sveltejs/kit";
+import { randomUUID } from "node:crypto";
 
-import { mapOSToImage, SUPPORTED_OS } from "$lib/constants";
+import { faker } from "@faker-js/faker";
+import { error, redirect } from "@sveltejs/kit";
+
+import { PAGE_SIZE } from "$lib/constants";
+import * as logger from "$lib/log";
 
 import type { PageServerLoad } from "./$types";
 import type { Device } from "./types";
@@ -15,39 +18,53 @@ interface User {
 	ping: number;
 }
 
+const fetchUrl = "/";
+
 export const load: PageServerLoad = ({ url: { searchParams }, depends, locals }) => {
-	const page = parseInt(searchParams.get("page") ?? "0", 10);
+	const logInfo = `requestId = ${randomUUID()}`;
+
+	logger.log("fetching:", `${fetchUrl} (${logInfo})...`);
+
+	const pageQuery = searchParams.get("page");
+
+	if (pageQuery === null) {
+		throw redirect(301, `/?page=0`);
+	}
+
+	const page = parseInt(pageQuery, 10);
+
 	if (isNaN(page)) {
+		logger.error("fetch failed:", `${fetchUrl} (${logInfo}, err = NAN_PAGE)...`);
+
 		throw error(400, "Invalid page.");
 	}
+
+	const totalPages = Math.ceil(
+		(locals.db.query<{ count: number }, []>("SELECT COUNT(*) AS count FROM User").get()
+			?.count ?? 0) / PAGE_SIZE,
+	);
+
 	const data = locals.db
 		.query<User, [number, number]>(
-			"SELECT ip_address AS ip, username, is_online as isOnline, cpu, ram, ping FROM User LIMIT ? OFFSET ?",
+			"SELECT ip_address AS ip, username, is_online as isOnline, cpu, ram, ping FROM User ORDER BY id DESC LIMIT ? OFFSET ?",
 		)
-		.all(20, page);
+		.all(PAGE_SIZE, page * PAGE_SIZE);
 
 	depends("home:query");
 
+	logger.success("fetched:", `${fetchUrl} (${logInfo})...`);
+
 	return {
-		devices: data.map(({ username: userId, ip, cpu, ram, ping }) => {
-			const os =
-				SUPPORTED_OS[
-					faker.number.int({
-						min: 0,
-						max: SUPPORTED_OS.length - 1,
-					})
-				];
-			return {
+		totalPages,
+		devices: data.map(({ username: userId, ip, cpu, ram, ping, isOnline }) => ({
 				userId,
-				userFirstName: faker.person.firstName(),
-				userLastName: faker.person.lastName(),
-				os,
-				osImage: mapOSToImage[os],
+				userName: faker.person.fullName(),
 				ip,
 				cpu,
 				ram,
 				ping,
-			} satisfies Device;
-		}),
+				isOnline: Boolean(isOnline),
+			} satisfies Device
+		)),
 	};
 };

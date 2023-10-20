@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "dev": "vite dev",
-    "build": "vite build",
+    "bundle": "vite build",
     "preview": "vite preview",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
@@ -15,6 +15,7 @@
   "dependencies": {
     "@faker-js/faker": "8.1.0",
     "chart.js": "4.4.0",
+    "picocolors": "1.0.0",
     "ws": "8.14.2"
   },
   "devDependencies": {
