@@ -74,10 +74,10 @@
 				{#each ASIDE_MENU_LINKS as { href, title }}
 					<li
 						class={clsx(
-							"w-full rounded-md px-2 py-1 transition-colors duration-100",
+							"w-full rounded-md px-2 py-1 transition-colors duration-100 shadow-md",
 							$page.url.pathname === href
 								? "bg-gray-200 text-black dark:bg-neutral-800 dark:text-white"
-								: "text-neutral-700 hover:bg-gray-200 hover:text-black dark:text-neutral-300 dark:hover:bg-neutral-800 dark:hover:text-white",
+								: "text-neutral-700 hover:bg-gray-200 hover:text-black dark:text-neutral-300 dark:bg-neutral-1000 dark:hover:bg-neutral-800 dark:hover:text-white",
 						)}
 					>
 						<a {href}>

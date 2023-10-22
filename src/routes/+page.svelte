@@ -4,6 +4,7 @@
 
 	// import { browser } from "$app/environment";
 	import { invalidate } from "$app/navigation";
+	import { page } from "$app/stores";
 	import Heading from "$components/shared/Heading.svelte";
 	import { range } from "$lib/range";
 
@@ -35,6 +36,8 @@
 	// 		console.log("[ws] message received", event);
 	// 	});
 	// }
+
+	$: currentPage = $page.url.searchParams.get("page");
 
 	onMount(() => {
 		const interval = setInterval(() => invalidate("home:query"), 10000);
@@ -76,21 +79,25 @@
 			/>
 		</form>
 		<div class="flex h-fit w-full flex-row flex-wrap gap-2">
-			{#each range(0, data.totalPages - 1) as page}
-				<PaginationButton as="a" href={`/?page=${page}`}>
-					{page}
+			{#each range(0, data.totalPages - 1) as navigatePage}
+				<PaginationButton
+					as="a"
+					href={`/?page=${navigatePage}`}
+					active={!!currentPage && +currentPage === navigatePage}
+				>
+					{navigatePage}
 				</PaginationButton>
 			{/each}
 		</div>
 	</div>
 {/if}
-<div class="dark:bg-neutral-1000 h-full w-full rounded-md bg-white shadow-lg">
+<div class="h-full w-full rounded-md bg-white shadow-lg dark:bg-neutral-1000">
 	<div class="relative h-full w-full overflow-x-auto overflow-y-auto">
 		<!-- TODO: add `Attention needed` with colors, add search function? -->
 		<table class="absolute w-full table-auto border-separate border-spacing-4">
 			<thead>
 				<tr
-					class="dark:[&>th]:bg-neutral-1000 [&>th]:sticky [&>th]:top-0 [&>th]:bg-white [&>th]:transition-colors [&>th]:duration-100"
+					class="[&>th]:sticky [&>th]:top-0 [&>th]:bg-white [&>th]:transition-colors [&>th]:duration-100 dark:[&>th]:bg-neutral-1000"
 				>
 					<th class="text-left md:w-[15%]">
 						<Heading type="title">ID</Heading>
