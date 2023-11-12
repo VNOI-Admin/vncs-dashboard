@@ -6,11 +6,15 @@
 	import { colorScheme } from "$lib/stores/colorScheme";
 	import type { CpuRamChartType, CpuRamChartWorkerEvent } from "$lib/types";
 
-	export let chartType: CpuRamChartType,
-		chartWidth: number,
-		chartHeight: number,
-		chartLabel: string,
+	interface CpuRamChartProps {
+		chartType: CpuRamChartType;
+		chartWidth: number;
+		chartHeight: number;
+		chartLabel: string;
 		chartUsage: number;
+	}
+
+	const { chartType, chartWidth, chartHeight, chartLabel, chartUsage } = $props<CpuRamChartProps>();
 
 	const initChart: Action<HTMLCanvasElement, number> = (canvas, initialData) => {
 		const ctx = canvas.transferControlToOffscreen();

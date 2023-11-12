@@ -10,6 +10,10 @@ export default {
 				"colors-opacity": `${defaultTheme.transitionProperty.colors}, opacity`,
 			},
 			colors: {
+				accent: {
+					light: "#1e40af",
+					dark: "#7dd3fc",
+				},
 				neutral: {
 					1000: "#111111",
 				},

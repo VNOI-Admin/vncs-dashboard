@@ -1,15 +1,15 @@
 <script lang="ts">
 	import Heading from "$components/shared/Heading.svelte";
+	import { getPingColorClass } from "$lib/getPingColorClass";
 	import { getUsageColorClass } from "$lib/getUsageColorClass";
 
 	import type { Device } from "./types";
 
-	export let device: Device;
+	const { device } = $props<{ device: Device }>();
 
-	$: cpuUsage = device.cpu;
-	$: ramUsage = device.ram;
-	$: cpuColor = getUsageColorClass(cpuUsage);
-	$: ramColor = getUsageColorClass(ramUsage);
+	const pingColor = $derived(getPingColorClass(device.ping)),
+		cpuColor = $derived(getUsageColorClass(device.cpu)),
+		ramColor = $derived(getUsageColorClass(device.ram));
 </script>
 
 <tr>
@@ -22,11 +22,6 @@
 	</td>
 	<td>
 		<Heading type="title">
-			{device.userName}
-		</Heading>
-	</td>
-	<td>
-		<Heading type="title">
 			{device.ip}
 		</Heading>
 	</td>
@@ -35,14 +30,19 @@
 			{device.isOnline ? "✅" : "❌"}
 		</Heading>
 	</td>
+	<td class={pingColor}>
+		<Heading type="title" noColor>
+			{device.ping} ms
+		</Heading>
+	</td>
 	<td class={cpuColor}>
 		<Heading type="title" noColor>
-			{cpuUsage}%
+			{device.cpu}%
 		</Heading>
 	</td>
 	<td class={ramColor}>
 		<Heading type="title" noColor>
-			{ramUsage}%
+			{device.ram}%
 		</Heading>
 	</td>
 </tr>

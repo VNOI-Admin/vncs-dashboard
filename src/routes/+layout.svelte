@@ -1,8 +1,6 @@
 <script lang="ts">
 	import "../app.css";
 
-	import { onMount } from "svelte";
-
 	import { page } from "$app/stores";
 	import ToggleScheme from "$components/layouts/ToggleScheme.svelte";
 	import Heading from "$components/shared/Heading.svelte";
@@ -12,7 +10,7 @@
 	import { isColorScheme } from "$lib/isColorScheme";
 	import { colorScheme } from "$lib/stores/colorScheme";
 
-	onMount(() => {
+	$effect(() => {
 		const newTheme = document.documentElement.dataset.theme;
 		$colorScheme = isColorScheme(newTheme) ? newTheme : "light";
 		colorScheme.subscribe((value) => {
@@ -21,9 +19,11 @@
 		});
 	});
 
-	$: title = $page.data.title ? `${$page.data.title} - VNCS Dashboard` : "VNCS Dashboard";
+	const title = $derived(
+		$page.data.title ? `${$page.data.title} - VNCS Dashboard` : "VNCS Dashboard",
+	);
 
-	$: isDark = $colorScheme === "dark";
+	const isDark = $derived($colorScheme === "dark");
 
 	interface AsideMenuLink {
 		href: string;
@@ -70,14 +70,14 @@
 	<div class="flex w-full flex-col gap-2 self-stretch p-2 md:flex-row">
 		<aside class="px-2 md:flex-[1_1_0]">
 			<Heading type="title-large">Menu</Heading>
-			<ul class="flex w-full flex-col gap-2 mt-4">
+			<ul class="mt-4 flex w-full flex-col gap-2">
 				{#each ASIDE_MENU_LINKS as { href, title }}
 					<li
 						class={clsx(
-							"w-full rounded-md px-2 py-1 transition-colors duration-100 shadow-md",
+							"w-full rounded-md px-2 py-1 shadow-md transition-colors duration-100",
 							$page.url.pathname === href
 								? "bg-gray-200 text-black dark:bg-neutral-800 dark:text-white"
-								: "text-neutral-700 hover:bg-gray-200 hover:text-black dark:text-neutral-300 dark:bg-neutral-1000 dark:hover:bg-neutral-800 dark:hover:text-white",
+								: "text-neutral-700 hover:bg-gray-200 hover:text-black dark:bg-neutral-1000 dark:text-neutral-300 dark:hover:bg-neutral-800 dark:hover:text-white",
 						)}
 					>
 						<a {href}>

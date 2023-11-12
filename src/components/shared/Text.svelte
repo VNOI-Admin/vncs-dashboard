@@ -5,20 +5,19 @@
 
 	type TextVariant = "default" | "error";
 
-	interface $$Props extends Omit<HTMLAttributes<HTMLParagraphElement>, "class"> {
+	interface TextProps extends Omit<HTMLAttributes<HTMLParagraphElement>, "class"> {
 		screenReaderOnly?: boolean;
 		variant?: TextVariant;
 	}
 
-	export let screenReaderOnly: boolean = false,
-		variant: TextVariant = "default";
+	const { screenReaderOnly = false, variant = "default", ...rest } = $props<TextProps>();
 
 	const mapVariantToClass: Record<TextVariant, string> = {
 		default: "text-black dark:text-white",
 		error: "text-red-500 dark:text-red-400",
 	};
 
-	$: mappedVariant = mapVariantToClass[variant];
+	const mappedVariant = $derived(mapVariantToClass[variant]);
 </script>
 
 <p
@@ -27,7 +26,7 @@
 		mappedVariant,
 		screenReaderOnly && "sr-only",
 	)}
-	{...$$restProps}
+	{...rest}
 >
 	<slot />
 </p>

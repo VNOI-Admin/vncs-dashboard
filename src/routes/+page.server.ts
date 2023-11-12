@@ -1,6 +1,5 @@
 import { randomUUID } from "node:crypto";
 
-import { faker } from "@faker-js/faker";
 import { error, redirect } from "@sveltejs/kit";
 
 import { PAGE_SIZE } from "$lib/constants";
@@ -56,15 +55,16 @@ export const load: PageServerLoad = ({ url: { searchParams }, depends, locals })
 
 	return {
 		totalPages,
-		devices: data.map(({ username: userId, ip, cpu, ram, ping, isOnline }) => ({
-				userId,
-				userName: faker.person.fullName(),
-				ip,
-				cpu,
-				ram,
-				ping,
-				isOnline: Boolean(isOnline),
-			} satisfies Device
-		)),
+		devices: data.map(
+			({ username: userId, ip, cpu, ram, ping, isOnline }) =>
+				({
+					userId,
+					ip,
+					cpu,
+					ram,
+					ping,
+					isOnline: Boolean(isOnline),
+				}) satisfies Device,
+		),
 	};
 };

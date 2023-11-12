@@ -1,11 +1,13 @@
 <script lang="ts" context="module">
-	import type { HTMLAttributes } from "svelte/elements";
-
-	import { clsx } from "$lib/clsx";
-
 	export type HeadingElement = "h1" | "h2" | "h3" | "h4";
 	export type HeadingVariant = "default" | "error";
 	export type HeadingType = "subtitle" | "title" | "title-large" | "display";
+</script>
+
+<script lang="ts">
+	import type { HTMLAttributes } from "svelte/elements";
+
+	import { clsx } from "$lib/clsx";
 
 	const mapTypeToComponent: Record<
 		HeadingType,
@@ -36,25 +38,25 @@
 		default: "text-black dark:text-white",
 		error: "text-red-500 dark:text-red-400",
 	};
-</script>
-
-<script lang="ts">
-	interface $$Props extends Omit<HTMLAttributes<HTMLHeadingElement>, "class"> {
+	interface HeadingProps extends Omit<HTMLAttributes<HTMLHeadingElement>, "class"> {
 		variant?: HeadingVariant;
 		type?: HeadingType;
 		screenReaderOnly?: boolean;
 		noColor?: boolean;
 	}
 
-	let variant: HeadingVariant = "default",
-		type: HeadingType = "title",
-		screenReaderOnly: boolean = false,
-		noColor: boolean = false;
+	const {
+		variant = "default",
+		type = "title",
+		screenReaderOnly = false,
+		noColor = false,
+		...props
+	} = $props<HeadingProps>();
 
-	$: mappedComponent = mapTypeToComponent[type];
-	$: mappedVariant = mapVariantToClass[variant];
+	const mappedComponent = $derived(mapTypeToComponent[type]),
+		mappedVariant = $derived(mapVariantToClass[variant]);
 
-	export { noColor,screenReaderOnly, type, variant };
+	export { noColor, screenReaderOnly, type, variant };
 </script>
 
 <svelte:element
@@ -65,7 +67,7 @@
 		screenReaderOnly && "sr-only",
 		mappedComponent.className,
 	)}
-	{...$$restProps}
+	{...props}
 >
 	<slot />
 </svelte:element>

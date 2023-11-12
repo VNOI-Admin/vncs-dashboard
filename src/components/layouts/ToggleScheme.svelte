@@ -4,7 +4,7 @@
 	import { clsx } from "$lib/clsx";
 	import { colorScheme, toggleColorScheme } from "$lib/stores/colorScheme";
 
-	$: dark = $colorScheme === "dark";
+	const dark = $derived($colorScheme === "dark");
 </script>
 
 <div>

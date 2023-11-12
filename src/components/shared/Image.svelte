@@ -1,17 +1,14 @@
 <script lang="ts">
 	import type { HTMLImgAttributes } from "svelte/elements";
 
-	interface $$Props extends HTMLImgAttributes {
+	interface ImageProps extends HTMLImgAttributes {
 		src?: string;
         alt: string;
 		width: number;
 		height: number;
 	}
 
-	export let loading: $$Props["loading"] = "lazy",
-		decoding: $$Props["decoding"] = "async",
-        src: $$Props["src"] = undefined,
-        alt: $$Props["alt"];
+	const { loading = "lazy", decoding = "async", src = undefined, alt, ...rest } = $props<ImageProps>();
 </script>
 
-<img {src} {alt} {loading} {decoding} {...$$restProps} />
+<img {src} {alt} {loading} {decoding} {...rest} />

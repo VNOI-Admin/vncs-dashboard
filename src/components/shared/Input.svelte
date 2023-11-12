@@ -5,52 +5,55 @@
 
 	import Text from "./Text.svelte";
 
-	type InputVariant = "sm" | "md";
-
-	interface $$Props extends HTMLInputAttributes {
+	interface InputProps extends HTMLInputAttributes {
 		label: string;
 		id: string;
 		errorTextId?: string;
 		errorText?: string;
-		variant?: InputVariant;
 		sameLine?: boolean;
+		shrinkLabelOnFocus?(value: any): boolean;
 	}
 
-	const mapVariantToClass: Record<InputVariant, string> = {
-		sm: "w-fit px-2.5 py-0.5",
-		md: "w-full p-2.5",
-	};
+	const {
+		label,
+		id,
+		errorTextId,
+		errorText,
+		sameLine = false,
+		shrinkLabelOnFocus = (value) => value === null || value === undefined || value === "",
+		...rest
+	} = $props<InputProps>();
 
-	export let label: $$Props["label"],
-		id: $$Props["id"],
-		errorTextId: $$Props["errorTextId"] = undefined,
-		errorText: $$Props["errorText"] = undefined,
-		variant: InputVariant = "md",
-		sameLine: boolean = false;
+	let inputValue = $state<any>(undefined);
+
+	const shouldShrinkLabelOnFocus = $derived(shrinkLabelOnFocus(inputValue));
 </script>
 
-<label
-	class={clsx(
-		"block text-xl font-medium text-gray-900 dark:text-gray-300",
-		sameLine && "flex flex-row gap-2",
-	)}
->
-	{label}
+<div class="relative">
 	<input
 		{id}
 		class={clsx(
-			"block rounded-md text-sm transition-opacity disabled:opacity-50 shadow-md",
-			"focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800",
-			"bg-white text-black",
-			"dark:bg-neutral-1000 dark:text-white dark:placeholder:text-gray-400",
-			mapVariantToClass[variant],
+			"peer block h-[44px] rounded-lg text-sm shadow-md transition-opacity disabled:opacity-50 w-fit px-2.5 pt-2.5",
+			"focus:border-accent-light dark:focus:border-accent-dark border border-neutral-400 focus:outline-none dark:border-neutral-700",
+			"bg-white text-black dark:bg-neutral-1000 dark:text-white dark:placeholder:text-gray-400",
 		)}
 		aria-invalid={!!errorText}
 		aria-describedby={errorTextId}
-		{...$$restProps}
+		bind:value={inputValue}
+		{...rest}
 	/>
-</label>
-
-{#if !!errorText && errorTextId}
-	<Text variant="error" id={errorTextId}>{errorText}</Text>
-{/if}
+	<label
+		class={clsx(
+			"absolute left-2.5 block font-medium text-black transition-all duration-100 ease-in dark:text-white",
+			shouldShrinkLabelOnFocus
+				? "top-1/2 -translate-y-1/2 text-sm peer-focus:top-0.5 peer-focus:translate-y-0 peer-focus:text-xs peer-focus:text-neutral-700 peer-focus:dark:text-gray-300"
+				: "top-0.5 text-xs text-neutral-700 dark:text-gray-300",
+		)}
+		for={id}
+	>
+		{label}
+	</label>
+	{#if !!errorText && errorTextId}
+		<Text variant="error" id={errorTextId}>{errorText}</Text>
+	{/if}
+</div>
