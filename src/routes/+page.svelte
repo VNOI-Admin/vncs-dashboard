@@ -12,7 +12,7 @@
 	import Input from "$components/shared/Input.svelte";
 	import ChevronRight from "$components/icons/ChevronRight.svelte";
 	import { clsx } from "$lib/clsx";
-	import type { Device, DeviceInfoKeys } from "./types";
+	import type { DeviceInfoKeys, OrderBy } from "./types";
 	import Sort from "$components/icons/Sort.svelte";
 	import Checkbox from "$components/shared/Checkbox.svelte";
 
@@ -37,25 +37,15 @@
 	// 	});
 	// }
 
-	const currentPage = $derived($page.url.searchParams.get("page"));
+	const currentPage = $derived($page.url.searchParams.get("page")),
+		order = $derived($page.url.searchParams.get("order")),
+		orderBy = $derived($page.url.searchParams.get("orderBy"));
 
 	$effect(() => {
 		const interval = setInterval(() => invalidate("home:query"), 10000);
 
 		return () => clearInterval(interval);
 	});
-
-	let sortCrit = $state<keyof Device>("userId"),
-		sortAsc = $state<boolean>(false);
-
-	const sortedDeviceList = $derived(
-		data.devices.toSorted((a, b) => {
-			if (a[sortCrit] < b[sortCrit]) {
-				return sortAsc ? -1 : 1;
-			}
-			return sortAsc ? 1 : -1;
-		}),
-	);
 
 	const mapDeviceInfoKeyToName: Record<DeviceInfoKeys, string> = {
 		userId: "ID",
@@ -66,8 +56,21 @@
 		ram: "RAM usage",
 	};
 
+	const mapDeviceInfoKeyToOrderBy: Partial<Record<DeviceInfoKeys, OrderBy>> = {
+		userId: "username",
+		ip: "ip",
+		ping: "ping",
+	};
+
 	// This should be in the same order as the one used in DeviceInfo.
-	const deviceKeys = ["userId", "ip", "isOnline", "ping", "cpu", "ram"] satisfies DeviceInfoKeys[];
+	const deviceKeys = [
+		"userId",
+		"ip",
+		"isOnline",
+		"ping",
+		"cpu",
+		"ram",
+	] satisfies DeviceInfoKeys[];
 </script>
 
 <Heading type="title-large">Monitor</Heading>
@@ -91,7 +94,7 @@
 			<Input
 				label="To page"
 				id="home-quick-navigate-page"
-				type="text"
+				type="search"
 				inputmode="numeric"
 				pattern="[0-9]*"
 				name="page"
@@ -104,7 +107,11 @@
 			{#each range(0, data.totalPages - 1) as navigatePage}
 				<PaginationButton
 					as="a"
-					href={`/?page=${navigatePage}`}
+					href={(() => {
+						const url = new URL($page.url);
+						url.searchParams.set("page", "" + navigatePage);
+						return url.toString();
+					})()}
 					active={!!currentPage && +currentPage === navigatePage}
 				>
 					{navigatePage}
@@ -113,7 +120,16 @@
 		</div>
 	</div>
 {/if}
-<Checkbox label="Sort by ascending order" id="home-sort-by-ascend-input" bind:checked={sortAsc} />
+<a
+	class="text-accent-light underline dark:text-accent-dark"
+	href={(() => {
+		const url = new URL($page.url);
+		url.searchParams.set("order", order === "DESC" ? "ASC" : "DESC");
+		return url.toString();
+	})()}
+>
+	Sort by {order === "DESC" ? "ascending" : "descending"} order
+</a>
 <div class="h-full w-full rounded-xl bg-white shadow-2xl dark:bg-neutral-1000">
 	<div class="relative h-full w-full overflow-x-auto overflow-y-auto">
 		<table class="absolute w-full table-auto border-separate border-spacing-4">
@@ -122,31 +138,40 @@
 					class="[&>th]:sticky [&>th]:top-0 [&>th]:bg-white [&>th]:transition-colors [&>th]:duration-100 dark:[&>th]:bg-neutral-1000"
 				>
 					{#each deviceKeys as key}
+						{@const keyAsOrderByValue = mapDeviceInfoKeyToOrderBy[key]}
 						<th class="text-left md:w-[calc(100%/6)]">
 							<div class="flex items-center gap-2">
 								<Heading type="title">{mapDeviceInfoKeyToName[key]}</Heading>
-								<button
-									class={clsx(
-										"rounded p-2 transition-colors duration-100",
-										sortCrit === key
-											? "bg-accent-light dark:bg-accent-dark [&>svg]:invert dark:[&>svg]:invert-0"
-											: "[&>svg]:dark:invert",
-									)}
-									on:click={() => sortCrit = key}
-								>
-									<Sort
-										width={24}
-										height={24}
-										class="transition-[filter] duration-100"
-									/>
-								</button>
+								{#if !!keyAsOrderByValue}
+									<a
+										href={(() => {
+											const url = new URL($page.url);
+
+											url.searchParams.set("orderBy", keyAsOrderByValue);
+
+											return url.toString();
+										})()}
+										class={clsx(
+											"rounded p-2 transition-colors duration-100",
+											orderBy === keyAsOrderByValue
+												? "bg-accent-light dark:bg-accent-dark [&>svg]:invert dark:[&>svg]:invert-0"
+												: "[&>svg]:dark:invert",
+										)}
+									>
+										<Sort
+											width={24}
+											height={24}
+											class="transition-[filter] duration-100"
+										/>
+									</a>
+								{/if}
 							</div>
 						</th>
 					{/each}
 				</tr>
 			</thead>
 			<tbody>
-				{#each sortedDeviceList as device}
+				{#each data.devices as device}
 					<DeviceInfo {device} />
 				{/each}
 			</tbody>

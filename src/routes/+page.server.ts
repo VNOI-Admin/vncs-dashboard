@@ -4,8 +4,10 @@ import { error, redirect } from "@sveltejs/kit";
 
 import { PAGE_SIZE } from "$lib/constants";
 import * as logger from "$lib/log";
+import { readonlyArrayIncludes } from "$lib/readonlyArrayIncludes";
 
 import type { PageServerLoad } from "./$types";
+import { VALID_ORDER_BY_VALUES, VALID_ORDER_VALUES } from "./constants";
 import type { Device } from "./types";
 
 interface User {
@@ -17,23 +19,45 @@ interface User {
 	ping: number;
 }
 
-const fetchUrl = "/";
+export const load: PageServerLoad = ({ url, depends, locals }) => {
+	const logInfo = `page = /, requestId = ${randomUUID()}`;
 
-export const load: PageServerLoad = ({ url: { searchParams }, depends, locals }) => {
-	const logInfo = `requestId = ${randomUUID()}`;
+	logger.log("fetching:", `(${logInfo})...`);
 
-	logger.log("fetching:", `${fetchUrl} (${logInfo})...`);
-
-	const pageQuery = searchParams.get("page");
+	const pageQuery = url.searchParams.get("page"),
+		orderByQuery = url.searchParams.get("orderBy"),
+		orderQuery = url.searchParams.get("order")?.toUpperCase();
 
 	if (pageQuery === null) {
-		throw redirect(301, `/?page=0`);
+		const nextUrl = new URL(url);
+		nextUrl.searchParams.set("page", "0");
+		throw redirect(301, nextUrl);
+	}
+
+	if (orderByQuery === null) {
+		const nextUrl = new URL(url);
+		nextUrl.searchParams.set("orderBy", "username");
+		throw redirect(301, nextUrl);
+	}
+
+	if (orderQuery === undefined) {
+		const nextUrl = new URL(url);
+		nextUrl.searchParams.set("order", "DESC");
+		throw redirect(301, nextUrl);
 	}
 
 	const page = parseInt(pageQuery, 10);
 
-	if (isNaN(page)) {
-		logger.error("fetch failed:", `${fetchUrl} (${logInfo}, err = NAN_PAGE)...`);
+	if (
+		isNaN(page) ||
+		!readonlyArrayIncludes(VALID_ORDER_BY_VALUES, orderByQuery) ||
+		!readonlyArrayIncludes(VALID_ORDER_VALUES, orderQuery)
+	) {
+		console.log(page, orderByQuery, orderQuery);
+		logger.error(
+			"fetch failed:",
+			`(${logInfo}, err = NAN_PAGE/INVALID_ORDER_BY/INVALID_ORDER)...`,
+		);
 
 		throw error(400, "Invalid page.");
 	}
@@ -45,13 +69,13 @@ export const load: PageServerLoad = ({ url: { searchParams }, depends, locals })
 
 	const data = locals.db
 		.query<User, [number, number]>(
-			"SELECT ip_address AS ip, username, is_online as isOnline, cpu, ram, ping FROM User ORDER BY id DESC LIMIT ? OFFSET ?",
+			`SELECT ip_address AS ip, username, is_online as isOnline, cpu, ram, ping FROM User ORDER BY ${orderByQuery} ${orderQuery} LIMIT ? OFFSET ?`,
 		)
 		.all(PAGE_SIZE, page * PAGE_SIZE);
 
 	depends("home:query");
 
-	logger.success("fetched:", `${fetchUrl} (${logInfo})...`);
+	logger.success("fetched:", `(${logInfo})...`);
 
 	return {
 		totalPages,

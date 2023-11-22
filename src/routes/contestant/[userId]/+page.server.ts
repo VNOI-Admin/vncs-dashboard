@@ -15,12 +15,11 @@ interface User {
 	ping: number;
 }
 
-const fetchUrl = `/contestant/[userId]`;
 
 export const load: PageServerLoad = ({ params, locals, depends }) => {
-	const logInfo = `requestId = ${randomUUID()}, userId = ${params.userId}`;
+	const logInfo = `page = /contestant/[userId], requestId = ${randomUUID()}, userId = ${params.userId}`;
 
-	logger.log("fetching:", `${fetchUrl} (${logInfo})...`);
+	logger.log("fetching:", `(${logInfo})...`);
 
 	const data = locals.db
 		.query<User, [string]>(
@@ -29,13 +28,13 @@ export const load: PageServerLoad = ({ params, locals, depends }) => {
 		.get(params.userId);
 
 	if (data === null) {
-		logger.error("fetch failed:", `${fetchUrl} (${logInfo}, err = USER_NON_EXISTENT)...`);
+		logger.error("fetch failed:", `(${logInfo}, err = USER_NON_EXISTENT)...`);
 		throw error(404, "User does not exist.");
 	}
 
 	depends("contestant:data:info");
 
-	logger.success("fetched:", `${fetchUrl} (${logInfo})...`);
+	logger.success("fetched:", `(${logInfo})...`);
 
 	return {
 		title: `Contestant ${data.username}`,
