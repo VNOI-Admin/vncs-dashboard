@@ -14,7 +14,6 @@
 	import { clsx } from "$lib/clsx";
 	import type { DeviceInfoKeys, OrderBy } from "./types";
 	import Sort from "$components/icons/Sort.svelte";
-	import Checkbox from "$components/shared/Checkbox.svelte";
 
 	const { data } = $props<{ data: PageData }>();
 
