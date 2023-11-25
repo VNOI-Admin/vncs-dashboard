@@ -87,8 +87,8 @@
 	/>
 	<Text>Quick navigate</Text>
 </button>
-{#if isQuickNavigateOpen}
-	<div class="flex h-fit w-full flex-col gap-2">
+<div class="flex h-fit w-full flex-col gap-2">
+	{#if isQuickNavigateOpen}
 		<form method="GET" action="/">
 			<Input
 				label="To page"
@@ -102,32 +102,32 @@
 				sameLine
 			/>
 		</form>
-		<div class="flex h-fit w-full flex-row flex-wrap gap-2">
-			{#each range(0, data.totalPages - 1) as navigatePage}
-				<PaginationButton
-					as="a"
-					href={(() => {
-						const url = new URL($page.url);
-						url.searchParams.set("page", "" + navigatePage);
-						return url.toString();
-					})()}
-					active={!!currentPage && +currentPage === navigatePage}
-				>
-					{navigatePage}
-				</PaginationButton>
-			{/each}
-		</div>
+	{/if}
+	<div class="flex h-fit w-full flex-row flex-wrap gap-2">
+		{#each range(0, data.totalPages - 1) as navigatePage}
+			<PaginationButton
+				as="a"
+				href={(() => {
+					const url = new URL($page.url);
+					url.searchParams.set("page", "" + navigatePage);
+					return url.toString();
+				})()}
+				active={!!currentPage && +currentPage === navigatePage}
+			>
+				{navigatePage}
+			</PaginationButton>
+		{/each}
 	</div>
-{/if}
+</div>
 <a
 	class="text-accent-light underline dark:text-accent-dark"
 	href={(() => {
 		const url = new URL($page.url);
-		url.searchParams.set("order", order === "DESC" ? "ASC" : "DESC");
+		url.searchParams.set("order", order === "desc" ? "asc" : "desc");
 		return url.toString();
 	})()}
 >
-	Sort by {order === "DESC" ? "ascending" : "descending"} order
+	Sort by {order === "desc" ? "ascending" : "descending"} order
 </a>
 <div class="h-full w-full rounded-xl bg-white shadow-2xl dark:bg-neutral-1000">
 	<div class="relative h-full w-full overflow-x-auto overflow-y-auto">

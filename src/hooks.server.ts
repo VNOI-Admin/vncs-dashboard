@@ -1,4 +1,4 @@
-import type { Handle } from "@sveltejs/kit";
+import type { Handle, HandleServerError } from "@sveltejs/kit";
 import Database from "bun:sqlite";
 import path from "path";
 
@@ -8,4 +8,11 @@ export const handle: Handle = ({ event, resolve }) => {
 	event.locals.db = db;
 
 	return resolve(event);
+};
+
+export const handleError: HandleServerError = ({ error }) => {
+	return {
+		message: (error as any)?.message || "Whoops! An unexpected internal server error occurred.",
+		code: (error as any)?.code ?? "UNKNOWN",
+	};
 };
