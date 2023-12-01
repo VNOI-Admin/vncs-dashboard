@@ -4,6 +4,8 @@ import path from "path";
 
 const db = new Database(path.join(process.cwd(), "./src/db/database.sqlite"));
 
+db.exec("pragma journal_mode = wal");
+
 export const handle: Handle = ({ event, resolve }) => {
 	event.locals.db = db;
 
