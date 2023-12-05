@@ -24,8 +24,10 @@ export const load: PageServerLoad = ({ url, depends, locals }) => {
 
 	logger.log("fetching:", `(${logInfo})...`);
 
+	const filter = url.searchParams.get("filter") || "";
+
 	const totalPages = Math.ceil(
-		(locals.db.query<{ count: number }, []>("SELECT COUNT(*) AS count FROM User").get()
+		(locals.db.query<{ count: number }, []>(`SELECT COUNT(*) AS count FROM User WHERE username LIKE '%${filter}%'`).get()
 			?.count ?? 0) / PAGE_SIZE,
 	);
 
@@ -52,8 +54,6 @@ export const load: PageServerLoad = ({ url, depends, locals }) => {
 		nextUrl.searchParams.set("order", "desc");
 		throw redirect(301, nextUrl);
 	}
-
-	const filter = url.searchParams.get("filter") || "";
 
 	const data = locals.db
 		.query<User, [number, number]>(
