@@ -118,6 +118,18 @@
 			</PaginationButton>
 		{/each}
 	</div>
+
+	<!-- Create a filter input with content from filter in url search param -->
+	<form method="GET" action="/">
+		<Input
+			label="Filter"
+			id="home-filter"
+			type="search"
+			name="filter"
+			value={$page.url.searchParams.get("filter") ?? ""}
+			sameLine
+		/>
+	</form>
 </div>
 <a
 	class="text-accent-light underline dark:text-accent-dark"

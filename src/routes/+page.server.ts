@@ -53,9 +53,11 @@ export const load: PageServerLoad = ({ url, depends, locals }) => {
 		throw redirect(301, nextUrl);
 	}
 
+	const filter = url.searchParams.get("filter") || "";
+
 	const data = locals.db
 		.query<User, [number, number]>(
-			`SELECT ip_address AS ip, username, is_online as isOnline, cpu, ram, ping FROM User ORDER BY ${orderByQuery} ${orderQuery.toUpperCase()} LIMIT ? OFFSET ?`,
+			`SELECT ip_address AS ip, username, is_online as isOnline, cpu, ram, ping FROM User WHERE username LIKE '%${filter}%' ORDER BY ${orderByQuery} ${orderQuery.toUpperCase()} LIMIT ? OFFSET ?`,
 		)
 		.all(PAGE_SIZE, page * PAGE_SIZE);
 

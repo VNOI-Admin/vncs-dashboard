@@ -11,6 +11,7 @@
 		errorTextId?: string;
 		errorText?: string;
 		sameLine?: boolean;
+		value?: any;
 		shrinkLabelOnFocus?(value: any): boolean;
 	}
 
@@ -20,11 +21,13 @@
 		errorTextId,
 		errorText,
 		sameLine = false,
+		value,
 		shrinkLabelOnFocus = (value) => value === null || value === undefined || value === "",
 		...rest
 	} = $props<InputProps>();
 
-	let inputValue = $state<any>(undefined);
+	// let inputValue = $state<any>(undefined);
+	let inputValue = $state<any>(value ?? undefined);
 
 	const shouldShrinkLabelOnFocus = $derived(shrinkLabelOnFocus(inputValue));
 </script>
