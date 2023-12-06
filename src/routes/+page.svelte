@@ -72,7 +72,23 @@
 	] satisfies DeviceInfoKeys[];
 </script>
 
-<Heading type="title-large">Monitor</Heading>
+<Heading type="title-large">Monitor
+
+	<!-- Show number of online by counting isOnline in devices -->
+	<span class="text-accent-light dark:text-accent-dark">
+		({data.devices.filter((device) => device.isOnline).length} online)
+	</span>
+
+	<!-- Show number of offline by counting isOnline in devices -->
+	<span class="text-accent-light dark:text-accent-dark">
+		({data.devices.filter((device) => !device.isOnline).length} offline)
+	</span>
+
+	<!-- total -->
+	<span class="text-accent-light dark:text-accent-dark">
+		({data.devices.length} total)
+	</span>
+</Heading>
 <button
 	class="flex flex-row items-center gap-2 [&>*]:select-none"
 	on:click={() => (isQuickNavigateOpen = !isQuickNavigateOpen)}
