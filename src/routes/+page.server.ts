@@ -31,6 +31,14 @@ export const load: PageServerLoad = ({ url, depends, locals }) => {
 			?.count ?? 0) / PAGE_SIZE,
 	);
 
+	const onlineCount = locals.db.query<{ count: number }, [string]>(`SELECT COUNT(*) AS count FROM User WHERE username LIKE '%' || ? || '%' AND is_online = true`).get(filter)
+			?.count ?? 0;
+
+	const offlineCount =
+		locals.db.query<{ count: number }, [string]>(`SELECT COUNT(*) AS count FROM User WHERE username LIKE '%' || ? || '%' AND is_online = false`).get(filter)
+			?.count ?? 0;
+
+
 	const pageQuery = url.searchParams.get("page"),
 		orderByQuery = url.searchParams.get("orderBy"),
 		orderQuery = url.searchParams.get("order");
@@ -41,6 +49,8 @@ export const load: PageServerLoad = ({ url, depends, locals }) => {
 		return {
 			totalPages,
 			devices: [],
+			onlineCount: 0,
+			offlineCount: 0,
 		};
 	}
 
@@ -85,5 +95,7 @@ export const load: PageServerLoad = ({ url, depends, locals }) => {
 					isOnline: Boolean(isOnline),
 				}) satisfies Device,
 		),
+		onlineCount,
+		offlineCount,
 	};
 };
