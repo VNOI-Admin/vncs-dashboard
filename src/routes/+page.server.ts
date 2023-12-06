@@ -27,15 +27,15 @@ export const load: PageServerLoad = ({ url, depends, locals }) => {
 	const filter = url.searchParams.get("filter") || "";
 
 	const totalPages = Math.ceil(
-		(locals.db.query<{ count: number }, [string]>(`SELECT COUNT(*) AS count FROM User WHERE username LIKE '%' || ? || '%'`).get(filter)
+		(locals.db.query<{ count: number }, [string]>(`SELECT COUNT(*) AS count FROM User WHERE username LIKE ? || '%'`).get(filter)
 			?.count ?? 0) / PAGE_SIZE,
 	);
 
-	const onlineCount = locals.db.query<{ count: number }, [string]>(`SELECT COUNT(*) AS count FROM User WHERE username LIKE '%' || ? || '%' AND is_online = true`).get(filter)
+	const onlineCount = locals.db.query<{ count: number }, [string]>(`SELECT COUNT(*) AS count FROM User WHERE username LIKE ? || '%' AND is_online = true`).get(filter)
 			?.count ?? 0;
 
 	const offlineCount =
-		locals.db.query<{ count: number }, [string]>(`SELECT COUNT(*) AS count FROM User WHERE username LIKE '%' || ? || '%' AND is_online = false`).get(filter)
+		locals.db.query<{ count: number }, [string]>(`SELECT COUNT(*) AS count FROM User WHERE username LIKE ? || '%' AND is_online = false`).get(filter)
 			?.count ?? 0;
 
 
@@ -74,7 +74,7 @@ export const load: PageServerLoad = ({ url, depends, locals }) => {
 
 	const data = locals.db
 		.query<User, [string, number, number]>(
-			`SELECT ip_address AS ip, username, is_online as isOnline, cpu, ram, ping FROM User WHERE username LIKE '%' || ? || '%' ORDER BY ${orderByQuery} ${orderQuery.toUpperCase()} LIMIT ? OFFSET ?`,
+			`SELECT ip_address AS ip, username, is_online as isOnline, cpu, ram, ping FROM User WHERE username LIKE ? || '%' ORDER BY ${orderByQuery} ${orderQuery.toUpperCase()} LIMIT ? OFFSET ?`,
 		)
 		.all(filter, PAGE_SIZE, page * PAGE_SIZE);
 
