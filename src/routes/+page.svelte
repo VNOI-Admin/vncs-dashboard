@@ -59,6 +59,8 @@
 		userId: "username",
 		ip: "ip",
 		ping: "ping",
+		cpu: "cpu",
+		ram: "ram",
 	};
 
 	// This should be in the same order as the one used in DeviceInfo.
