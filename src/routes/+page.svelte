@@ -74,21 +74,22 @@
 	] satisfies DeviceInfoKeys[];
 </script>
 
-<Heading type="title-large">Monitor
+<Heading type="title-large"
+	>Monitor
 
 	<!-- Show number of online by counting isOnline in devices -->
 	<span class="text-accent-light dark:text-accent-dark">
-		({ data.onlineCount } online)
+		({data.onlineCount} online)
 	</span>
 
 	<!-- Show number of offline by counting isOnline in devices -->
 	<span class="text-accent-light dark:text-accent-dark">
-		({ data.offlineCount } offline)
+		({data.offlineCount} offline)
 	</span>
 
 	<!-- total -->
 	<span class="text-accent-light dark:text-accent-dark">
-		({ data.onlineCount + data.offlineCount } total)
+		({data.onlineCount + data.offlineCount} total)
 	</span>
 </Heading>
 <button

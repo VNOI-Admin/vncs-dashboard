@@ -20,13 +20,6 @@
 	const mappedVariant = $derived(mapVariantToClass[variant]);
 </script>
 
-<p
-	class={clsx(
-        "text-lg",
-		mappedVariant,
-		screenReaderOnly && "sr-only",
-	)}
-	{...rest}
->
+<p class={clsx("text-lg", mappedVariant, screenReaderOnly && "sr-only")} {...rest}>
 	<slot />
 </p>
